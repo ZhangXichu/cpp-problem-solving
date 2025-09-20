@@ -28,20 +28,12 @@ private:
         std::sort(l_arr.begin(), l_arr.end());
         std::sort(r_arr.begin(), r_arr.end());
 
-        // std::cout << "l = " << l << ", r = " << r << ", m = " << m << std::endl; 
-        // std::cout << "left array: " << std::endl;
-        // print_arr(l_arr);
-        // std::cout << "right array: " << std::endl;
-        // print_arr(r_arr);
-
         long long res = 0;
 
         for (int n: r_arr)
         {
             auto it = std::upper_bound(l_arr.begin(), l_arr.end(), 2LL*n);
             res += std::distance(it, l_arr.end());
-
-            // std::cout << "distance: " << std::distance(it, r_arr.end()) << std::endl; 
         }
 
         return (int)(reverse_pairs_re(nums, l, m) + reverse_pairs_re(nums, m+1, r) + res);
