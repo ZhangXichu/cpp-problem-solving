@@ -4,6 +4,7 @@
 #include <utility> 
 #include <unordered_map>
 #include <queue>
+#include <iostream>
 
 struct pair_hash
 {
@@ -31,16 +32,32 @@ public:
     {
         std::unordered_map<std::pair<int, int>, bool, pair_hash, pair_equal> visited;
 
+        for (int i = 0; i < grid.size(); ++i)
+        {
+            for (int j = 0; j < grid[0].size(); ++j)
+            {
+                visited[{i, j}] = false;
+            }
+        }
+
         std::queue<std::pair<int, int>> q;
 
         q.emplace(0, 0);
-        visited.emplace(std::make_pair(0, 0), true);
+        visited[{0, 0}] = true;
 
         while (!q.empty())
         {
+            std::cout << "Queue content: ";
+
             auto [i, j] = q.front();
 
             auto neighbors = adjacent(i, j, grid.size(), grid[0].size());
+
+            for (auto [v1, v2] : neighbors)
+            {
+                std::cout << "(" << v1 << ", " << v2 << ") ";
+            }   
+            std::cout << "\n";
 
             for (const auto& neighbor : neighbors)
             {
@@ -56,6 +73,11 @@ public:
 
             q.pop();
         }
+
+        std::cout << "Visited matrix:\n";
+        print_visited(visited);
+
+        return 1;
     }
 
 
@@ -86,13 +108,44 @@ private:
 
         return result;
     }
+
+    void print_visited(const std::unordered_map<std::pair<int,int>, bool, pair_hash, pair_equal>& visited) {
+        if (visited.empty()) return;
+
+        // find bounds
+        int max_row = 0, max_col = 0;
+        for (auto& [key, _] : visited) {
+            max_row = std::max(max_row, key.first);
+            max_col = std::max(max_col, key.second);
+        }
+
+        // print matrix
+        for (int r = 0; r <= max_row; ++r) {
+            for (int c = 0; c <= max_col; ++c) {
+                auto it = visited.find({r, c});
+                if (it != visited.end() && it->second) {
+                    std::cout << "1 ";
+                } else {
+                    std::cout << "0 ";
+                }
+            }
+            std::cout << "\n";
+        }
+    }
 };
 
 
 int main()
 {
-    // TODO: test the BFS
-    // TODO: run BFS again for all the unvisited nodes that equals to '1'
+    std::vector<std::vector<char>> grid = {
+        {'1','1','1','1','0'},
+        {'1','1','0','1','0'},
+        {'1','1','0','0','0'},
+        {'0','0','0','0','0'}
+    };
+
+    Solution solution;
+    solution.numIslands(grid);
 
     return 0;
 }
