@@ -40,10 +40,51 @@ public:
             }
         }
 
+        int num_islands = 0;
+
+        num_islands += num_islands_aux(grid, visited, {0, 0});
+
+        int num_unvisited = 0;
+        for (const auto& [key, value] : visited) {
+            if (!value) {
+                ++num_unvisited;
+            }
+        }
+
+        while (num_unvisited > 0) {
+
+            num_unvisited = 0;
+
+            for (auto &[idx, v] : visited)
+            {
+                if (!v)
+                {
+                    std::cout << "Starting new island at: (" << idx.first << ", " << idx.second << ")\n";
+                    num_islands += num_islands_aux(grid, visited, idx);
+                    num_unvisited--;
+                }
+            }
+        }
+
+        std::cout << "Visited matrix:\n";
+        print_visited(visited);
+
+        return num_islands;
+    }
+
+
+private:
+    int num_islands_aux(std::vector<std::vector<char>>& grid, std::unordered_map<std::pair<int, int>, bool, pair_hash, pair_equal>& visited, std::pair<int, int> start) 
+    {
         std::queue<std::pair<int, int>> q;
 
-        q.emplace(0, 0);
-        visited[{0, 0}] = true;
+        q.emplace(start);
+        if (grid[start.first][start.second] == '0')
+        {
+            return 0;
+        }
+
+        visited[start] = true;
 
         while (!q.empty())
         {
@@ -74,14 +115,10 @@ public:
             q.pop();
         }
 
-        std::cout << "Visited matrix:\n";
-        print_visited(visited);
-
         return 1;
     }
 
 
-private:
     std::vector<std::pair<int, int>> adjacent(int i, int j, int num_rows, int num_cols)
     {
         std::vector<std::pair<int, int>> result;
@@ -144,8 +181,24 @@ int main()
         {'0','0','0','0','0'}
     };
 
+    // std::vector<std::vector<char>> grid = {
+    //     {'1','1','0','0','0'},
+    //     {'1','1','0','0','0'},
+    //     {'0','0','1','0','0'},
+    //     {'0','0','0','1','1'}
+    // };
+
+    //     std::vector<std::vector<char>> grid = {
+    //     {'1','0','0','0','0'},
+    //     {'0','1','0','0','0'},
+    //     {'0','0','1','0','0'},
+    //     {'0','0','0','1','1'}
+    // };
+
     Solution solution;
-    solution.numIslands(grid);
+    int res = solution.numIslands(grid);
+
+    std::cout << "Number of islands: " << res << "\n";
 
     return 0;
 }
